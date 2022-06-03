@@ -14,6 +14,9 @@ RGB_LED	KEYWORD1
 
 set	KEYWORD2
 tick	KEYWORD2
+setColor	KEYWORD2
+fadeToColor	KEYWORD2
+fadeColors	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)

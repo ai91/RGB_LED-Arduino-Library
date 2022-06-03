@@ -31,7 +31,6 @@ void RGB_LED::set (unsigned long *param, int _repeat) {
 	startTime = millis();
 	repeat = _repeat;
 	count = *param;
- Serial.println(count);
 	setRGB(_params[1+index*2]);
 }
 
@@ -54,10 +53,10 @@ int RGB_LED::tick(void) {
 
 		break;
 	}
-  
- if (index == i)
-  return 0;
-  
+
+	if (index == i)
+		return 0;
+
 	if (i >= count) {
 		startTime = millis();
 		if (repeat == 0) {
@@ -66,7 +65,6 @@ int RGB_LED::tick(void) {
 			_params = NULL;
 		} else {
 			i = 0;
-			
 			repeat--;
 		}
 		if (!_params) {
@@ -80,9 +78,42 @@ int RGB_LED::tick(void) {
 	return 0;
 } 
 
+void RGB_LED::setColor(unsigned long colorRGB) {
+	_params = NULL;
+	setRGB(colorRGB);
+}
+
+void RGB_LED::fadeToColor(unsigned long toRGB, unsigned long period) {
+	fadeColors(currentColor, toRGB, period);
+}
+
+void RGB_LED::fadeColors(unsigned long fromRGB, unsigned long toRGB, unsigned long period) {
+	fadeParams[0] = FADE_STEPS;
+        unsigned long stepPeriod = period / (FADE_STEPS-1);
+	long i;
+	long fromR = fromRGB >> 16 & 0xFF;
+	long fromG = fromRGB >> 8 & 0xFF;
+	long fromB = fromRGB & 0xFF;
+	long toR = toRGB >> 16 & 0xFF;
+	long toG = toRGB >> 8 & 0xFF;
+	long toB = toRGB & 0xFF;
+	long stepR = (toR - fromR) / (FADE_STEPS-1);
+	long stepG = (toG - fromG) / (FADE_STEPS-1);
+	long stepB = (toB - fromB) / (FADE_STEPS-1);
+	for(i=0; i<FADE_STEPS-1; i++ ) {
+		long stepColor = ((fromR + stepR*i)<<16) | ((fromG + stepG*i)<<8) | (fromB + stepB*i);
+		fadeParams[i*2+1] = stepColor;
+		fadeParams[i*2+2] = stepPeriod;
+	}
+	fadeParams[FADE_STEPS*2-1] = toRGB;
+	fadeParams[FADE_STEPS*2] = 0xFFFFFFFF-period;
+	set(fadeParams, 1);
+}
+
 void RGB_LED::setRGB(unsigned long p){
-	analogWrite(pinred, PINVAL(p >> 16 & 0xff));	
-	analogWrite(pingreen, PINVAL(p >> 8 & 0xff));
-	analogWrite(pinblue, PINVAL(p & 0xff));
+	currentColor = p;
+	analogWrite(pinred, PINVAL(p >> 16 & 0xFF));	
+	analogWrite(pingreen, PINVAL(p >> 8 & 0xFF));
+	analogWrite(pinblue, PINVAL(p & 0xFF));
 }
 
