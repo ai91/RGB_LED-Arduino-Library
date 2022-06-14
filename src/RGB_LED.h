@@ -5,7 +5,7 @@
 
 #define	COMMON_ANODE		1
 #define	COMMON_CATHOD		0
-#define FADE_STEPS		10
+#define FADE_STEPS		20
 
 class RGB_LED {
   public:
@@ -19,6 +19,8 @@ class RGB_LED {
 	void setColor(unsigned long colorRGB);
 	void fadeToColor(unsigned long toRGB, unsigned long period);
 	void fadeColors(unsigned long fromRGB, unsigned long toRGB, unsigned long period);
+	void pulseColor(unsigned long toRGB, unsigned long period);
+	void pulseColors(unsigned long fromRGB, unsigned long toRGB, unsigned long period);
 	int tick(void);
 	
 private:
@@ -34,6 +36,7 @@ private:
 	unsigned long *_params = NULL;
 	unsigned long  fadeParams[FADE_STEPS*2+1];
 	void setRGB(unsigned long p);
+	void gradient(unsigned long *array, int startIndex, int steps, unsigned long stepPeriod, unsigned long fromRGB, unsigned long toRGB);
 };
 
 #endif
