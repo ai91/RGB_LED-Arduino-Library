@@ -13,26 +13,16 @@
 #define BLUE_PIN D5
 
 RGB_LED rgb_led(RED_PIN, GREEN_PIN, BLUE_PIN, COMMON_CATHOD);
-unsigned long  yellow_blink[] = {
-  2,
-  0Xffef03L,
-  300L,
-  0,
-  300L
-}; 
-
-unsigned long  darkblue_blink[] = {
-  2,
-  0X004684L,
-  300L,
-  0,
-  300L
-}; 
 
 void setup() {
   // put your setup code here, to run once:
-  //rgb_led.set(yellow_blink, 0); uncomment this for yellow blink
-  rgb_led.set(darkblue_blink, 0);
+
+  // fade from blue to green during 5 seconds
+  rgb_led.fadeColors(0x0000FF, 0x00FF00, 5000);
+
+  // optionally fade current state (initially off) to white during 5 seconds
+  //rgb_led.fadeColor(0xFFFFFF, 5000);
+
 }
 
 void loop() {

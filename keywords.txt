@@ -17,6 +17,8 @@ tick	KEYWORD2
 setColor	KEYWORD2
 fadeToColor	KEYWORD2
 fadeColors	KEYWORD2
+pulseColor	KEYWORD2
+pulseColors	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
