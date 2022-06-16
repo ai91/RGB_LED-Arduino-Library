@@ -5,7 +5,7 @@
 
 #define	COMMON_ANODE		1
 #define	COMMON_CATHOD		0
-#define FADE_STEPS		20
+#define FADE_STEPS		20L
 
 class RGB_LED {
   public:

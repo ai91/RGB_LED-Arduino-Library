@@ -83,49 +83,50 @@ void RGB_LED::setColor(unsigned long colorRGB) {
 	setRGB(colorRGB);
 }
 
-void RGB_LED::fadeToColor(unsigned long toRGB, unsigned long period) {
-	fadeColors(currentColor, toRGB, period);
-}
-
 void RGB_LED::gradient(unsigned long *array, int startIndex, int steps, unsigned long stepPeriod, unsigned long fromRGB, unsigned long toRGB) {
-	long i;
-	long fromR = fromRGB >> 16 & 0xFF;
-	long fromG = fromRGB >> 8 & 0xFF;
-	long fromB = fromRGB & 0xFF;
-	long toR = toRGB >> 16 & 0xFF;
-	long toG = toRGB >> 8 & 0xFF;
-	long toB = toRGB & 0xFF;
+	int i;
+	long fromR = (fromRGB >> 16) & 0xFFL;
+	long fromG = (fromRGB >> 8) & 0xFFL;
+	long fromB = fromRGB & 0xFFL;
+	long toR = toRGB >> 16 & 0xFFL;
+	long toG = toRGB >> 8 & 0xFFL;
+	long toB = toRGB & 0xFFL;
 	long stepR = (toR - fromR) / (steps-1);
 	long stepG = (toG - fromG) / (steps-1);
 	long stepB = (toB - fromB) / (steps-1);
 	for (i=0; i<steps; i++) {
-		long stepColor = ((fromR + stepR*i)<<16) | ((fromG + stepG*i)<<8) | (fromB + stepB*i);
-		array[i*2+startIndex] = stepColor;
-		array[i*2+startIndex+1] = stepPeriod;
+		unsigned long stepColor = ((fromR + stepR*i)<<16) | ((fromG + stepG*i)<<8) | (fromB + stepB*i);
+		array[(i+startIndex)*2 - 1] = stepColor;
+		array[(i+startIndex)*2] = stepPeriod;
 	}
+	array[(steps-1+startIndex)*2 - 1] = toRGB;
+}
+
+void RGB_LED::fadeToColor(unsigned long toRGB, unsigned long period) {
+	fadeColors(currentColor, toRGB, period);
 }
 
 void RGB_LED::fadeColors(unsigned long fromRGB, unsigned long toRGB, unsigned long period) {
 	fadeParams[0] = FADE_STEPS;
         unsigned long stepPeriod = period / (FADE_STEPS-1);
 	gradient(fadeParams, 1, FADE_STEPS, stepPeriod, fromRGB, toRGB);
-	fadeParams[FADE_STEPS*2] = 0xFFFFFFFF-period;
+	fadeParams[FADE_STEPS*2] = 0xFFFFFFF0L-period;
 	set(fadeParams, 1);
 }
 
-void RGB_LED::pulseColor(unsigned long toRGB, unsigned long period){
+void RGB_LED::pulseColor(unsigned long toRGB, unsigned long period) {
 	pulseColors(currentColor, toRGB, period);
 }
 
 void RGB_LED::pulseColors(unsigned long fromRGB, unsigned long toRGB, unsigned long period) {
 	fadeParams[0] = FADE_STEPS;
-        unsigned long stepPeriod = period / (FADE_STEPS-1);
+	unsigned long stepPeriod = period / (FADE_STEPS-1);
 	gradient(fadeParams, 1, FADE_STEPS/2, stepPeriod, fromRGB, toRGB);
 	gradient(fadeParams, 1 + FADE_STEPS/2, FADE_STEPS/2, stepPeriod, toRGB, fromRGB);
 	set(fadeParams, 0);
 }
 
-void RGB_LED::setRGB(unsigned long p){
+void RGB_LED::setRGB(unsigned long p) {
 	currentColor = p;
 	analogWrite(pinred, PINVAL(p >> 16 & 0xFF));	
 	analogWrite(pingreen, PINVAL(p >> 8 & 0xFF));
